@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Overflow toolbar</title>
 <!-- SAP icon web component (real SAP-icons v5 font) -->
-<script type="module" src="https://cdn.jsdelivr.net/npm/@ui5/webcomponents-icons/dist/AllIcons.js"></script>
-<script type="module" src="https://cdn.jsdelivr.net/npm/@ui5/webcomponents/dist/Icon.js"></script>
+<script type="module" src="https://esm.sh/@ui5/webcomponents-icons/dist/AllIcons.js"></script>
+<script type="module" src="https://esm.sh/@ui5/webcomponents/dist/Icon.js"></script>
 <!-- Supabase JS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
@@ -993,16 +993,16 @@
       if (!k.endsWith('_count')) row[k] = responses[k];
     });
 
-    // 1) Insert the response, get its id back
-    const { data, error } = await sb
+    // Generate UUID client-side — avoids needing SELECT permission after insert
+    const responseId = crypto.randomUUID();
+    row.id = responseId;
+
+    // 1) Insert the response
+    const { error } = await sb
       .from('survey_responses')
-      .insert(row)
-      .select('id')
-      .single();
+      .insert(row);
 
     if (error) throw error;
-    if (!data) throw new Error('Insert returned no data — check RLS SELECT policy on survey_responses');
-    const responseId = data.id;
 
     // 2) Upload each attached image, then record its path
     for (const field of Object.keys(uploads)) {
