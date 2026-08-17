@@ -570,6 +570,7 @@
           <input type="file" accept="image/*" multiple hidden>
           <div class="upload-hint">Upload screenshots from your apps — PNG or JPG, up to 10 MB each</div>
           <div class="upload-instruction">Please share one or more screens of your <strong>Overflow toolbar</strong> so we can better understand how you use it.</div>
+          <div class="upload-instruction">Please show full screens rather than parts, so we can see the whole context.</div>
           <div class="file-list"></div>
         </div>
       </div>
@@ -603,7 +604,7 @@
               <span class="mock-title">Items</span>
               <span class="mock-btn">Sort</span>
               <span class="mock-btn">Filter</span>
-              <span class="mock-btn icon"><ui5-icon name="overflow"></ui5-icon></span>
+              <span class="mock-btn icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></span>
             </div>
             <div class="mock-pop old">
               <div class="field"><ui5-icon name="search"></ui5-icon> Search…</div>
@@ -618,7 +619,7 @@
               <span class="mock-title">Items</span>
               <span class="mock-btn">Sort</span>
               <span class="mock-btn">Filter</span>
-              <span class="mock-btn icon"><ui5-icon name="overflow"></ui5-icon></span>
+              <span class="mock-btn icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></span>
             </div>
             <div class="mock-pop">
               <div class="row"><ui5-icon name="group"></ui5-icon> Group</div>
@@ -673,7 +674,7 @@
           <span class="mock-title">Sales Orders</span>
           <span class="mock-btn">Create</span>
           <span class="mock-btn">Edit</span>
-          <span class="mock-btn icon" id="protoBtn" style="cursor:pointer;"><ui5-icon name="overflow"></ui5-icon></span>
+          <span class="mock-btn icon" id="protoBtn" style="cursor:pointer;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></span>
         </div>
         <div class="mock-pop" id="protoMenu" style="display:none;">
           <div class="row"><ui5-icon name="sort"></ui5-icon> Sort</div>
@@ -1000,6 +1001,7 @@
       .single();
 
     if (error) throw error;
+    if (!data) throw new Error('Insert returned no data — check RLS SELECT policy on survey_responses');
     const responseId = data.id;
 
     // 2) Upload each attached image, then record its path
@@ -1033,6 +1035,12 @@
         goTo(PAGES.length - 1);
       } catch (err) {
         console.error('Submit failed:', err);
+        console.error('Supabase error details:', {
+          message: err?.message,
+          code: err?.code,
+          details: err?.details,
+          hint: err?.hint
+        });
         nextBtn.disabled = false;
         nextBtn.textContent = original;
         let msg = pages[current].querySelector('.val-msg');
